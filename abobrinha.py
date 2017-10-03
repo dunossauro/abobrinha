@@ -1,34 +1,45 @@
 from json import dumps
+from os.path import abspath
 
 
-class Abobrinha:
-    def __init__(self, context):
-        self.context = context
-        self.features = []
-        self.atts = ['Name', 'Duration', 'Status']
+def abobrinha(feature, env_description, output_file='file.json'):
+    """
+    Generate a json file from feature context.
 
-    def end_feature(self, feature):
-        self.features.append(
-            {'Feature_name': feature.name,
-             'Duration': feature.duration,
-             'Status': feature.status,
-             'Tags': feature.tags,
-             'Scenarios': self._describe_scenarios(feature.scenarios)})
+    Args:
+        - feature: the feature argument in behave environment
+        - env_description: Description to environment
+            (archlinux, bsd, windows ...)
+    """
+    return _generate_json(_end_feature(feature, env_description))
 
-    def _describe_scenarios(self, scenarios):
-        return [{'Scenario_name': scenario.name,
-                 'Duration': scenario.duration,
-                 'Status': scenario.status,
-                 'Tags': scenario.tags,
-                 'Steps': self._describe_steps(scenario.steps)}
-                for scenario in scenarios]
 
-    def _describe_steps(self, steps):
-        return [{'Step_name': step.name,
-                 'Duration': step.duration,
-                 'Status': step.status}
-                for step in steps]
+def _end_feature(feature, env_description):
+    return {'feature_name': feature.name,
+            'duration': feature.duration,
+            'status': feature.status,
+            'tags': feature.tags,
+            'scenarios': _describe_scenarios(feature.scenarios),
+            'environment': env_description}
 
-    def generate_json(self):
-        with open('file.json', 'w') as doc:
-            doc.write(dumps(self.features))
+
+def _describe_scenarios(scenarios):
+    return [{'scenario_name': scenario.name,
+             'duration': scenario.duration,
+             'status': scenario.status,
+             'tags': scenario.tags,
+             'steps': _describe_steps(scenario.steps)}
+            for scenario in scenarios]
+
+
+def _describe_steps(steps):
+    return [{'step_name': step.name,
+             'duration': step.duration,
+             'status': step.status}
+            for step in steps]
+
+
+def _generate_json(features_json, filename='file.json'):
+    with open(filename, 'w') as doc:
+        doc.write(dumps(features_json))
+        return '{}: ceated!'.format(abspath('filename'))
