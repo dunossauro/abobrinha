@@ -40,6 +40,6 @@ def _describe_steps(steps):
 
 
 def _generate_json(features_json, filename='file.json'):
-    with open(filename, 'w') as doc:
-        doc.write(dumps(features_json))
+    with open(filename, 'w', encoding='utf8') as doc:
+        doc.write(dumps(features_json, ensure_ascii=False))
         return '{}: ceated!'.format(abspath('filename'))
